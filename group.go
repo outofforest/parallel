@@ -6,10 +6,11 @@ import (
 	"fmt"
 	"sync"
 	"sync/atomic"
-)
 
-// CtxFactory may be used to add something to context created for task
-var CtxFactory func(ctx context.Context, taskName string) context.Context
+	"github.com/outofforest/logger"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+)
 
 var nextTaskID int64 = 0x0bace1d000000000
 
@@ -74,9 +75,12 @@ func NewGroup(ctx context.Context) *Group {
 //  subgroup.Spawn(...)
 //  subgroup.Spawn(...)
 //
-func NewSubgroup(spawn SpawnFn, name string, onExit OnExit) *Group {
+func NewSubgroup(spawn SpawnFn, name string, onExit OnExit, fields ...zapcore.Field) *Group {
 	ch := make(chan *Group)
 	spawn(name, onExit, func(ctx context.Context) error {
+		if len(fields) > 0 {
+			ctx = logger.With(ctx, fields...)
+		}
 		g := NewGroup(ctx)
 		ch <- g
 		return g.Complete(ctx)
@@ -104,17 +108,17 @@ func (g *Group) Spawn(name string, onExit OnExit, task Task) {
 	g.running++
 	g.mu.Unlock()
 
-	go g.runTask(g.ctx, id, name, onExit, task)
+	log := logger.Get(g.ctx).Named(name)
+	log.Debug("Task spawned", zap.String("id", fmt.Sprintf("%x", id)), zap.Stringer("onExit", onExit))
+
+	go g.runTask(logger.WithLogger(g.ctx, log), id, name, onExit, task)
 }
 
 // Second parameter is the task ID. It is ignored because the only reason to
 // pass it is to add it to the stack trace
 func (g *Group) runTask(ctx context.Context, _ int64, name string, onExit OnExit, task Task) {
-	if CtxFactory != nil {
-		ctx = CtxFactory(ctx, name)
-	}
-	// nolint: ifshort
 	err := runTask(ctx, task)
+	logger.Get(ctx).Debug("Task finished", zap.Error(err))
 
 	g.mu.Lock()
 	defer g.mu.Unlock()

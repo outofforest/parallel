@@ -4,6 +4,9 @@ import (
 	"context"
 	"fmt"
 	"runtime/debug"
+
+	"github.com/outofforest/logger"
+	"go.uber.org/zap"
 )
 
 // PanicError is the error type that occurs when a subtask panics
@@ -32,6 +35,7 @@ func runTask(ctx context.Context, task Task) (err error) {
 		if p := recover(); p != nil {
 			panicErr := PanicError{Value: p, Stack: debug.Stack()}
 			err = panicErr
+			logger.Get(ctx).Error("Panic", zap.String("value", fmt.Sprint(p)), zap.ByteString("stack", panicErr.Stack))
 		}
 	}()
 	return task(ctx)
