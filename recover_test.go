@@ -19,7 +19,7 @@ func TestPanicString(t *testing.T) {
 			return panicWith("oops")
 		})
 		return nil
-	}).(ErrPanic)
+	}).(PanicError)
 	require.Nil(t, err.Unwrap())
 	require.EqualError(t, err, "panic: oops")
 	require.Equal(t, "oops", err.Value)
@@ -35,7 +35,7 @@ func TestPanicError(t *testing.T) {
 			return panicWith(errors.New("oops"))
 		})
 		return nil
-	}).(ErrPanic)
+	}).(PanicError)
 	require.Equal(t, errors.New("oops"), err.Unwrap())
 	require.EqualError(t, err, "panic: oops")
 	require.Equal(t, errors.New("oops"), err.Value)
