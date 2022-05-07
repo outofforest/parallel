@@ -113,6 +113,7 @@ func (g *Group) runTask(ctx context.Context, _ int64, name string, onExit OnExit
 	if CtxFactory != nil {
 		ctx = CtxFactory(ctx, name)
 	}
+	// nolint: ifshort
 	err := runTask(ctx, task)
 
 	g.mu.Lock()
