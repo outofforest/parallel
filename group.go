@@ -2,12 +2,12 @@ package parallel
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"sync"
 	"sync/atomic"
 
 	"github.com/outofforest/logger"
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -131,9 +131,9 @@ func (g *Group) runTask(ctx context.Context, _ int64, name string, onExit OnExit
 		case Exit:
 			g.exit(nil)
 		case Fail:
-			g.exit(fmt.Errorf("task %s terminated unexpectedly", name))
+			g.exit(errors.Errorf("task %s terminated unexpectedly", name))
 		default:
-			g.exit(fmt.Errorf("task %s: %v", name, onExit))
+			g.exit(errors.Errorf("task %s: %v", name, onExit))
 		}
 	}
 
