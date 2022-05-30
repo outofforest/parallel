@@ -2,15 +2,15 @@ package parallel
 
 import (
 	"context"
-	"errors"
 	"testing"
 
 	"github.com/outofforest/logger"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
 
 func TestRunNoSubtasksSuccess(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New())
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
 	err := Run(ctx, func(ctx context.Context, spawn SpawnFn) error {
 		return nil
 	})
@@ -18,7 +18,7 @@ func TestRunNoSubtasksSuccess(t *testing.T) {
 }
 
 func TestRunNoSubtasksError(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New())
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
 	err := Run(ctx, func(ctx context.Context, spawn SpawnFn) error {
 		return errors.New("oops")
 	})
@@ -26,7 +26,7 @@ func TestRunNoSubtasksError(t *testing.T) {
 }
 
 func TestRunSubtaskExit(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New())
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
 	seq := make(chan int)
 	step1 := make(chan struct{})
 	step2 := make(chan struct{})
@@ -58,7 +58,7 @@ func TestRunSubtaskExit(t *testing.T) {
 }
 
 func TestRunSubtaskContinue(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New())
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
 	seq := make(chan int)
 	step1 := make(chan struct{})
 	step2 := make(chan struct{})
@@ -91,7 +91,7 @@ func TestRunSubtaskContinue(t *testing.T) {
 
 // Fail is the actual enum for handling mode, so it should be present
 func TestRunSubtaskFail(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New())
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
 	seq := make(chan int)
 	step1 := make(chan struct{})
 	step2 := make(chan struct{})
@@ -126,7 +126,7 @@ func TestRunSubtaskFail(t *testing.T) {
 }
 
 func TestRunSubtaskError(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New())
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
 	seq := make(chan int)
 	step1 := make(chan struct{})
 	step2 := make(chan struct{})
@@ -161,7 +161,7 @@ func TestRunSubtaskError(t *testing.T) {
 }
 
 func TestRunSubtaskInitError(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New())
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
 	seq := make(chan int)
 	step1 := make(chan struct{})
 	step2 := make(chan struct{})
@@ -191,7 +191,7 @@ func TestRunSubtaskInitError(t *testing.T) {
 }
 
 func TestRunShutdownNotOK(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New())
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
 	seq := make(chan int)
 	step1 := make(chan struct{})
 	step2 := make(chan struct{})
@@ -218,11 +218,11 @@ func TestRunShutdownNotOK(t *testing.T) {
 	require.Equal(t, 2, <-seq)
 	close(step2)
 	require.Equal(t, 3, <-seq)
-	require.Equal(t, err, errors.New("failed shutdown"))
+	require.EqualError(t, err, "failed shutdown")
 }
 
 func TestRunShutdownCancel(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New())
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
 	seq := make(chan int)
 	step1 := make(chan struct{})
 	step2 := make(chan struct{})
@@ -253,7 +253,7 @@ func TestRunShutdownCancel(t *testing.T) {
 }
 
 func TestRunCancel(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New())
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
 	seq := make(chan int)
 	var err error
 	go func() {
@@ -273,7 +273,7 @@ func TestRunCancel(t *testing.T) {
 
 // Fail is the actual way for handling the tasks, so it should be present
 func TestExitFailTaskOnCancel(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New())
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
 	seq := make(chan int)
 	var err error
 	go func() {
