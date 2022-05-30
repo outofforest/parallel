@@ -73,6 +73,7 @@ linters:
     - maintidx
     - containedctx
     - contextcheck
+    - nonamedreturns
 
 linters-settings:
   nakedret:
