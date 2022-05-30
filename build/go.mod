@@ -5,6 +5,6 @@ go 1.16
 replace github.com/outofforest/parallel => ../
 
 require (
-	github.com/outofforest/build v1.8.4
-	github.com/outofforest/buildgo v0.4.4
+	github.com/outofforest/build v1.8.5
+	github.com/outofforest/buildgo v0.4.5
 )
