@@ -17,15 +17,15 @@ var nextTaskID int64 = 0x0bace1d000000000
 // Group is a facility for running a task with several subtasks without
 // inversion of control. For most ordinary use cases, use Run instead.
 //
-//  return Run(ctx, start)
+//	return Run(ctx, start)
 //
 // ...is equivalent to:
 //
-//  g := NewGroup(ctx)
-//  if err := start(g.Context(), g.Spawn); err != nil {
-//      g.Exit(err)
-//  }
-//  return g.Wait()
+//	g := NewGroup(ctx)
+//	if err := start(g.Context(), g.Spawn); err != nil {
+//	    g.Exit(err)
+//	}
+//	return g.Wait()
 //
 // Group is mostly useful in test suites where starting and finishing the group
 // is controlled by test setup and teardown functions.
@@ -57,24 +57,23 @@ func NewGroup(ctx context.Context) *Group {
 //
 // Example within parallel.Run:
 //
-//  err := parallel.Run(ctx, func(ctx context.Context, spawn parallel.SpawnFn) error {
-//      spawn(...)
-//      spawn(...)
-//      subgroup := parallel.NewSubgroup(spawn, "updater")
-//      subgroup.Spawn(...)
-//      subgroup.Spawn(...)
-//      return nil
-//  })
+//	err := parallel.Run(ctx, func(ctx context.Context, spawn parallel.SpawnFn) error {
+//	    spawn(...)
+//	    spawn(...)
+//	    subgroup := parallel.NewSubgroup(spawn, "updater")
+//	    subgroup.Spawn(...)
+//	    subgroup.Spawn(...)
+//	    return nil
+//	})
 //
 // Example within an explicit group:
 //
-//  group := parallel.NewGroup(ctx)
-//  group.Spawn(...)
-//  group.Spawn(...)
-//  subgroup := parallel.NewSubgroup(group.Spawn, "updater")
-//  subgroup.Spawn(...)
-//  subgroup.Spawn(...)
-//
+//	group := parallel.NewGroup(ctx)
+//	group.Spawn(...)
+//	group.Spawn(...)
+//	subgroup := parallel.NewSubgroup(group.Spawn, "updater")
+//	subgroup.Spawn(...)
+//	subgroup.Spawn(...)
 func NewSubgroup(spawn SpawnFn, name string, onExit OnExit, fields ...zapcore.Field) *Group {
 	ch := make(chan *Group)
 	spawn(name, onExit, func(ctx context.Context) error {
@@ -205,12 +204,11 @@ func (g *Group) Wait() error {
 //
 // This is a convenience method useful when attaching a subgroup:
 //
-//  spawn("subgroup", parallel.Fail, subgroup.Complete)
+//	spawn("subgroup", parallel.Fail, subgroup.Complete)
 //
 // ...or:
 //
-//  group.Spawn("subgroup", parallel.Fail, subgroup.Complete)
-//
+//	group.Spawn("subgroup", parallel.Fail, subgroup.Complete)
 func (g *Group) Complete(ctx context.Context) error {
 	select {
 	case <-ctx.Done():
