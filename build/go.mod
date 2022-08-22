@@ -6,5 +6,5 @@ replace github.com/outofforest/parallel => ../
 
 require (
 	github.com/outofforest/build v1.8.17
-	github.com/outofforest/buildgo v0.4.8
+	github.com/outofforest/buildgo v0.5.1
 )
