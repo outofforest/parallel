@@ -14,7 +14,7 @@ func panicWith(value interface{}) error {
 }
 
 func TestPanicString(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.DefaultConfig))
 	err := Run(ctx, func(ctx context.Context, spawn SpawnFn) error {
 		spawn("doomed", Fail, func(ctx context.Context) error {
 			return panicWith("oops")
@@ -30,7 +30,7 @@ func TestPanicString(t *testing.T) {
 }
 
 func TestPanicError(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.DefaultConfig))
 	err := Run(ctx, func(ctx context.Context, spawn SpawnFn) error {
 		spawn("doomed", Fail, func(ctx context.Context) error {
 			return panicWith(errors.New("oops"))

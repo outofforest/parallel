@@ -10,7 +10,7 @@ import (
 )
 
 func TestRunNoSubtasksSuccess(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.DefaultConfig))
 	err := Run(ctx, func(ctx context.Context, spawn SpawnFn) error {
 		return nil
 	})
@@ -18,7 +18,7 @@ func TestRunNoSubtasksSuccess(t *testing.T) {
 }
 
 func TestRunNoSubtasksError(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.DefaultConfig))
 	err := Run(ctx, func(ctx context.Context, spawn SpawnFn) error {
 		return errors.New("oops")
 	})
@@ -26,7 +26,7 @@ func TestRunNoSubtasksError(t *testing.T) {
 }
 
 func TestRunSubtaskExit(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.DefaultConfig))
 	seq := make(chan int)
 	step1 := make(chan struct{})
 	step2 := make(chan struct{})
@@ -58,7 +58,7 @@ func TestRunSubtaskExit(t *testing.T) {
 }
 
 func TestRunSubtaskContinue(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.DefaultConfig))
 	seq := make(chan int)
 	step1 := make(chan struct{})
 	step2 := make(chan struct{})
@@ -91,7 +91,7 @@ func TestRunSubtaskContinue(t *testing.T) {
 
 // Fail is the actual enum for handling mode, so it should be present
 func TestRunSubtaskFail(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.DefaultConfig))
 	seq := make(chan int)
 	step1 := make(chan struct{})
 	step2 := make(chan struct{})
@@ -126,7 +126,7 @@ func TestRunSubtaskFail(t *testing.T) {
 }
 
 func TestRunSubtaskError(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.DefaultConfig))
 	seq := make(chan int)
 	step1 := make(chan struct{})
 	step2 := make(chan struct{})
@@ -161,7 +161,7 @@ func TestRunSubtaskError(t *testing.T) {
 }
 
 func TestRunSubtaskInitError(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.DefaultConfig))
 	seq := make(chan int)
 	step1 := make(chan struct{})
 	step2 := make(chan struct{})
@@ -191,7 +191,7 @@ func TestRunSubtaskInitError(t *testing.T) {
 }
 
 func TestRunShutdownNotOK(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.DefaultConfig))
 	seq := make(chan int)
 	step1 := make(chan struct{})
 	step2 := make(chan struct{})
@@ -222,7 +222,7 @@ func TestRunShutdownNotOK(t *testing.T) {
 }
 
 func TestRunShutdownCancel(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.DefaultConfig))
 	seq := make(chan int)
 	step1 := make(chan struct{})
 	step2 := make(chan struct{})
@@ -253,7 +253,7 @@ func TestRunShutdownCancel(t *testing.T) {
 }
 
 func TestRunCancel(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.DefaultConfig))
 	seq := make(chan int)
 	var err error
 	go func() {
@@ -273,7 +273,7 @@ func TestRunCancel(t *testing.T) {
 
 // Fail is the actual way for handling the tasks, so it should be present
 func TestExitFailTaskOnCancel(t *testing.T) {
-	ctx := logger.WithLogger(context.Background(), logger.New(logger.ToolDefaultConfig))
+	ctx := logger.WithLogger(context.Background(), logger.New(logger.DefaultConfig))
 	seq := make(chan int)
 	var err error
 	go func() {
