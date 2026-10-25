@@ -108,6 +108,7 @@ func (onExit OnExit) String() string {
 func Run(ctx context.Context, start func(ctx context.Context, spawn SpawnFn) error) error {
 	g := NewGroup(ctx)
 
+	//nolint:contextcheck
 	if err := start(g.Context(), g.Spawn); err != nil {
 		g.Exit(err)
 	}

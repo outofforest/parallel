@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"runtime/debug"
 
-	"github.com/outofforest/logger"
 	"go.uber.org/zap"
+
+	"github.com/outofforest/logger"
 )
 
-// PanicError is the error type that occurs when a subtask panics
+// PanicError is the error type that occurs when a subtask panics.
 type PanicError struct {
-	Value interface{}
+	Value any
 	Stack []byte
 }
 
@@ -20,7 +21,7 @@ func (err PanicError) Error() string {
 }
 
 // Unwrap returns the error passed to panic, or nil if panic was called with
-// something other than an error
+// something other than an error.
 func (err PanicError) Unwrap() error {
 	if e, ok := err.Value.(error); ok {
 		return e
