@@ -4,9 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/outofforest/logger"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
+
+	"github.com/outofforest/logger"
 )
 
 func TestRunNoSubtasksSuccess(t *testing.T) {
@@ -89,7 +90,7 @@ func TestRunSubtaskContinue(t *testing.T) {
 	require.NoError(t, err)
 }
 
-// Fail is the actual enum for handling mode, so it should be present
+// Fail is the actual enum for handling mode, so it should be present.
 func TestRunSubtaskFail(t *testing.T) {
 	ctx := logger.WithLogger(context.Background(), logger.New(logger.DefaultConfig))
 	seq := make(chan int)
@@ -271,7 +272,7 @@ func TestRunCancel(t *testing.T) {
 	require.Equal(t, err, context.Canceled)
 }
 
-// Fail is the actual way for handling the tasks, so it should be present
+// Fail is the actual way for handling the tasks, so it should be present.
 func TestExitFailTaskOnCancel(t *testing.T) {
 	ctx := logger.WithLogger(context.Background(), logger.New(logger.DefaultConfig))
 	seq := make(chan int)

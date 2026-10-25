@@ -1,3 +1,4 @@
+//nolint:dupword
 package parallel
 
 import (
@@ -6,10 +7,11 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/outofforest/logger"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
+	"github.com/outofforest/logger"
 )
 
 var nextTaskID int64 = 0x0bace1d000000000
@@ -30,7 +32,7 @@ var nextTaskID int64 = 0x0bace1d000000000
 // Group is mostly useful in test suites where starting and finishing the group
 // is controlled by test setup and teardown functions.
 type Group struct {
-	ctx    context.Context
+	ctx    context.Context //nolint:containedctx
 	cancel context.CancelFunc
 
 	mu      sync.Mutex
@@ -40,7 +42,7 @@ type Group struct {
 	err     error
 }
 
-// NewGroup creates a new Group controlled by the given context
+// NewGroup creates a new Group controlled by the given context.
 func NewGroup(ctx context.Context) *Group {
 	g := new(Group)
 	g.ctx, g.cancel = context.WithCancel(ctx)
@@ -88,7 +90,7 @@ func NewSubgroup(spawn SpawnFn, name string, onExit OnExit, fields ...zapcore.Fi
 }
 
 // Context returns the inner context of the group which controls the lifespan of
-// its subtasks
+// its subtasks.
 func (g *Group) Context() context.Context {
 	return g.ctx
 }
@@ -113,49 +115,6 @@ func (g *Group) Spawn(name string, onExit OnExit, task Task) {
 	go g.runTask(logger.WithLogger(g.ctx, log), id, name, onExit, task)
 }
 
-// Second parameter is the task ID. It is ignored because the only reason to
-// pass it is to add it to the stack trace
-func (g *Group) runTask(ctx context.Context, _ int64, name string, onExit OnExit, task Task) {
-	err := runTask(ctx, task)
-	logger.Get(ctx).Debug("Task finished", zap.Error(err))
-
-	g.mu.Lock()
-	defer g.mu.Unlock()
-
-	if err != nil {
-		g.exit(err)
-	} else if !g.closing {
-		switch onExit {
-		case Continue:
-		case Exit:
-			g.exit(nil)
-		case Fail:
-			g.exit(errors.Errorf("task %s terminated unexpectedly", name))
-		default:
-			g.exit(errors.Errorf("task %s: %v", name, onExit))
-		}
-	}
-
-	g.running--
-	if g.running == 0 {
-		close(g.done)
-	}
-}
-
-func (g *Group) exit(err error) {
-	// Cancellations during shutdown are fine
-	if g.closing && errors.Is(err, context.Canceled) {
-		return
-	}
-	if g.err == nil {
-		g.err = err
-	}
-	if !g.closing {
-		g.closing = true
-		g.cancel()
-	}
-}
-
 // Exit prompts the group to shut down, if it's not already shutting down or
 // finished. This causes the inner context to close, which should prompt any
 // running subtasks to exit. Use Wait to block until all the subtasks actually
@@ -169,7 +128,7 @@ func (g *Group) Exit(err error) {
 	g.exit(err)
 }
 
-// Running returns the number of running subtasks
+// Running returns the number of running subtasks.
 func (g *Group) Running() int {
 	g.mu.Lock()
 	defer g.mu.Unlock()
@@ -218,4 +177,47 @@ func (g *Group) Complete(ctx context.Context) error {
 		return err
 	}
 	return ctx.Err()
+}
+
+// Second parameter is the task ID. It is ignored because the only reason to
+// pass it is to add it to the stack trace.
+func (g *Group) runTask(ctx context.Context, _ int64, name string, onExit OnExit, task Task) {
+	err := runTask(ctx, task)
+	logger.Get(ctx).Debug("Task finished", zap.Error(err))
+
+	g.mu.Lock()
+	defer g.mu.Unlock()
+
+	if err != nil {
+		g.exit(err)
+	} else if !g.closing {
+		switch onExit {
+		case Continue:
+		case Exit:
+			g.exit(nil)
+		case Fail:
+			g.exit(errors.Errorf("task %s terminated unexpectedly", name))
+		default:
+			g.exit(errors.Errorf("task %s: %v", name, onExit))
+		}
+	}
+
+	g.running--
+	if g.running == 0 {
+		close(g.done)
+	}
+}
+
+func (g *Group) exit(err error) {
+	// Cancellations during shutdown are fine
+	if g.closing && errors.Is(err, context.Canceled) {
+		return
+	}
+	if g.err == nil {
+		g.err = err
+	}
+	if !g.closing {
+		g.closing = true
+		g.cancel()
+	}
 }
